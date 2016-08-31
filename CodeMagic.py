@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import base64
+import hashlib
 import tkinter
 import tkinter.scrolledtext as tkst
 import urllib
@@ -33,7 +35,7 @@ class Application(Frame):
         ttk.Label(one2N_Frame, text='原始文本：').grid(sticky=E)
         self.oriText = tkst.ScrolledText(one2N_Frame, height=5)
         self.oriText.grid(row=0, column=1)
-        ttk.Button(one2N_Frame, text='给我转', command=self.runTrans).grid(row=0, column=2, padx=15)
+        ttk.Button(one2N_Frame, text='给我转！！！', command=self.runTrans).grid(row=0, column=2, padx=15)
         # URL编码
         ttk.Label(one2N_Frame, text='URL编码：').grid(sticky=E)
         self.urlText = tkst.ScrolledText(one2N_Frame, height=5)
@@ -65,11 +67,25 @@ class Application(Frame):
     # 消息处理函数
     # 1toN转换
     def runTrans(self):
-        s_oriText = self.oriText.get(1.0, END).lstrip().rstrip()
-        # url编码
+        s_oriText = self.oriText.get(1.0, END).rstrip("\n")
+        # URL编码
         self.urlText.delete(1.0, END)
         self.urlText.insert(END, urllib.parse.quote_plus(s_oriText))
-
+        # 16进制编码
+        self.hexText.delete(1.0, END)
+        self.hexText.insert(END, "0x" + "".join(format(ord(c), '02X') for c in s_oriText))
+        # ASCII编码
+        self.asciiText.delete(1.0, END)
+        self.asciiText.insert(END, " ".join(format(ord(c), '02d') for c in s_oriText))
+        # MD5_16编码
+        self.md5_16Text.delete(1.0, END)
+        self.md5_16Text.insert(END, hashlib.new("MD5", s_oriText.encode()).hexdigest()[8:-8])
+        # MD5_32编码
+        self.md5_32Text.delete(1.0, END)
+        self.md5_32Text.insert(END, hashlib.new("MD5", s_oriText.encode()).hexdigest())
+        # BASE64编码
+        self.base64Text.delete(1.0, END)
+        self.base64Text.insert(END, base64.b64encode(s_oriText.encode()).decode())
 
 # End Class Application--------------------------------------------------------------------------------------------------
 
